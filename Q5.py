@@ -7,8 +7,8 @@ import pandas as pd
 import numpy as np
 from scipy.stats import rankdata as rd
 
-app = Flask(__name__)
-my_result = {"result": "Enter URL", "uploaded_url": "none"}
+app = Flask("Hello World")
+my_result = {"result": "Enter URL", "uploaded_url": "none", "app name": app.name}
 
 
 @app.route('/', methods=['GET'])
@@ -34,7 +34,7 @@ def processjson():
     # download file
     block_blob_service = BlockBlobService(account_name='dsconvreport',
                                           account_key='2wIt3xVY2HR5mXfl2489ctyE1CIewgwA0am+jE85HkOfOBKc7Af0KHHb2YS9Z466T+v9KClZXYeht21M3oXFYw==')
-    full_path_to_file = local_file_name[:-5]+"_downloaded.xlsx"
+    full_path_to_file = local_file_name
     block_blob_service.get_blob_to_path(container_name, local_file_name, full_path_to_file)
 
     # process data
@@ -56,13 +56,13 @@ def processjson():
 
     # make new file
     df["supplier_rank"] = my_ranks
-    new_file = "Test SupplierData_gaurav.xlsx"
+    new_file = "Test_Supplierdata_gaurav.xlsx"
     df.to_excel(new_file)
 
     # Upload file
-    block_blob_service.create_blob_from_path(container_name, local_file_name, new_file)
+    block_blob_service.create_blob_from_path(container_name, new_file, new_file)
 
-    output_url = "https://dsconvreport.blob.core.windows.net/"+container_name+"/"+ full_path_to_file
+    output_url = "https://dsconvreport.blob.core.windows.net/"+container_name+"/"+ new_file
     my_result['result'] = "Uploaded Successfully"
     my_result['uploaded_url'] = output_url
     return jsonify({'output_url': output_url, 'Message': 'Successfully Downloaded and Uploaded'})
